@@ -81,6 +81,35 @@ header h1 {
   background-color: #d62828;
 }
 
+.locatie-form {
+  margin-top: 20px;
+}
+
+.locatie-invoer-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.locatie-invoer-item label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+.locatie-invoer-item input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.status-bericht {
+  margin-top: 15px;
+  font-style: italic;
+  color: #555;
+}
+
 /* De exporteerknop */
 #exportButton {
   padding: 10px 16px; /* Maakt de knop iets groter dan de datum-input */
