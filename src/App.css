@@ -1,0 +1,305 @@
+/* Globale stijlen */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 20px;
+}
+
+header h1 {
+  color: #0056b3; /* Een medische blauwkleur */
+}
+
+/* De exporteerknop */
+#exportButton {
+  padding: 10px 16px; /* Maakt de knop iets groter dan de datum-input */
+  font-size: 16px;
+  font-weight: 600; /* Dikkere letters */
+  color: #fff;
+  background-color: #1a73e8; /* Een mooie 'Google' blauwe kleur */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Effect als je met je muis eroverheen gaat */
+#exportButton:hover {
+  background-color: #1765c4; /* Iets donkerder blauw */
+}
+
+/* Effect als je klikt */
+#exportButton:active {
+  transform: scale(0.98); /* Maakt de knop iets kleiner */
+}
+
+/* Stijl als de knop 'disabled' is (voordat een datum is gekozen) */
+#exportButton:disabled {
+  background-color: #b0bec5; /* Een neutrale grijze kleur */
+  opacity: 0.7;
+  cursor: not-allowed; /* Toon een 'niet toegestaan' muisicoon */
+}
+
+/* De knoppen bovenin */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+}
+
+.control-item label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+input[type='date'] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* De 'Schakeljaar' Toggle Switch (gebaseerd op het voorbeeld) */
+.toggle-label {
+  margin-right: 15px;
+}
+.toggle-input {
+  display: none; /* Verberg de standaard checkbox */
+}
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  background-color: #ccc;
+  border-radius: 34px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  top: 4px;
+  left: 4px;
+  transition: transform 0.2s;
+}
+.toggle-input:checked + .toggle-switch {
+  background-color: #007bff; /* Blauw als 'aan' */
+}
+.toggle-input:checked + .toggle-switch::before {
+  transform: translateX(22px);
+}
+
+/* De Rooster Lijst */
+.rooster-lijst {
+  margin-top: 20px;
+}
+
+.placeholder-text {
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+}
+
+/* Elk item in het rooster */
+.rooster-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #007bff; /* Standaardkleur */
+  transition: transform 0.2s ease-in-out;
+}
+
+.rooster-item:hover {
+  transform: translateY(-2px);
+}
+
+.rooster-info h3 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+.rooster-info p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.rooster-duur {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: #555;
+  white-space: nowrap; /* Zorgt dat "10 weken" niet breekt */
+  margin-left: 20px;
+}
+
+/* Kleurcodering (pas 'type' namen aan op basis van je roosterData.js) */
+.rooster-item.vakantie {
+  border-left-color: #ff9800; /* Oranje */
+}
+.rooster-item.stage {
+  border-left-color: #4caf50; /* Groen */
+}
+.rooster-item.semiarts {
+  border-left-color: #e91e63; /* Roze */
+}
+.rooster-item.coschap {
+  border-left-color: #007bff; /* Blauw */
+}
+.rooster-item.voorbereidend {
+  border-left-color: #9c27b0; /* Paars */
+
+/* VOEG DIT TOE AAN JE BESTAANDE APP.CSS */
+
+.main-nav {
+  background-color: #004a99; /* Een mooie donkerblauwe kleur */
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px; /* Ruimte tussen de links */
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+}
+
+.main-nav a:hover {
+  background-color: #0056b3;
+}
+
+/* De 'content' container (vervangt de oude .container) */
+.content {
+  max-width: 900px; /* Iets breder voor algemene pagina's */
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Je rooster-specifieke container (als je die had) */
+.rooster-container {
+  /* Je had hier misschien een max-width: 700px */
+  /* Je kunt die stijlen gewoon hier laten staan */
+}
+
+.fase-titel {
+  margin-top: 35px; /* Extra ruimte boven een nieuwe fase */
+  margin-bottom: 15px;
+  color: #004a99; /* Een professionele donkerblauwe kleur */
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+/* Zorg dat de allereerste titel niet die extra ruimte bovenaan krijgt */
+.rooster-lijst .fase-titel:first-of-type {
+  margin-top: 10px;
+}
+
+/* ==============================================
+   REGELEMENT VOOR MOBIELE TELEFOONS
+   ============================================== */
+
+@media (max-width: 600px) {
+
+  /* 1. Geef de hoofd-container minder witruimte aan de zijkant */
+  /* (Pas '.container' aan als je de wrapper in App.jsx anders hebt genoemd) */
+  .container {
+    padding: 10px; /* Minder padding op een klein scherm */
+  }
+
+  /* 2. Stapel de knoppen (datum & export) onder elkaar */
+  .controls {
+    flex-direction: column; /* Zet ze verticaal i.p.v. horizontaal */
+    align-items: stretch;   /* Rek de items uit over de volle breedte */
+    gap: 15px;              /* Ruimte tussen de twee knoppen */
+  }
+
+  /* 3. Zorg dat de knoppen de volle breedte pakken */
+  .control-item input[type="date"],
+  #exportButton {
+    width: 100%;
+    box-sizing: border-box; /* Zorgt dat padding de 100% breedte niet breekt */
+  }
+  
+  /* Optioneel: centreer de tekst op de knoppen */
+  .control-item label {
+    margin-bottom: 5px; /* Beetje ruimte boven de input */
+  }
+  
+  #exportButton {
+    text-align: center;
+  }
+
+  /* 4. Stapel de info van het rooster-item onder elkaar */
+  .rooster-item {
+    flex-direction: column;   /* Stapel info en duur verticaal */
+    align-items: flex-start;  /* Lijn alles links uit */
+    gap: 10px;                /* Ruimte tussen de info en de duur */
+  }
+
+  .rooster-duur {
+    /* Verwijder eventuele marges van de desktop-versie */
+    margin-left: 0; 
+    
+    /* Geef het een lichte achtergrond zodat het opvalt */
+    background-color: #f4f4f4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  /* 5. Maak de titels iets kleiner op mobiel */
+  header h1 {
+    font-size: 1.8rem; /* 'rem' schaalt beter dan 'em' */
+  }
+
+  .fase-titel {
+    font-size: 1.3rem;
+  }
+}
