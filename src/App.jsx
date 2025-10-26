@@ -17,6 +17,9 @@ function App() {
   // 3. STATE: Dit onthoudt wat de gebruiker kiest
   const [startDate, setStartDate] = useState(null);
 
+  //Filterstatus
+  const [includeKeuze, setIncludeKeuze] = useState(true);
+  const [includeStage, setIncludeStage] = useState(true);
   // 4. BEREKENING: Dit berekent het rooster
   // 'useMemo' zorgt dat dit alleen herberekend wordt als de state verandert
 const berekendRooster = useMemo(() => {
@@ -27,7 +30,18 @@ const berekendRooster = useMemo(() => {
     const parts = startDate.split('-'); 
     let huidigeDatum = new Date(parts[0], parts[1] - 1, parts[2]); 
 
-    const gekozenStructuur = regulierRooster;
+    const gekozenStructuur = regulierRooster.filter(blok => {
+      // Filter uit ALS het 'keuze' is EN de box NIET is aangevinkt
+      if (blok.blockId === 'keuze' && !includeKeuze) {
+        return false;
+      }
+      // Filter uit ALS het 'stage' is EN de box NIET is aangevinkt
+      if (blok.blockId === 'stage' && !includeStage) {
+        return false;
+      }
+      // Zo niet, houd het blok in de lijst
+      return true;
+    });
     const berekendeBlokken = []; // Hier bouwen we het rooster op
 
     const getChristmas = (date) => new Date(date.getFullYear(), 11, 25); // 25 dec
@@ -181,7 +195,7 @@ const berekendRooster = useMemo(() => {
       };
     });
 
-  }, [startDate]);
+  }, [startDate, includeKeuze, includeStage]);
 
 const handleExport = () => {
     if (!berekendRooster || berekendRooster.length === 0) {
@@ -225,8 +239,8 @@ const handleExport = () => {
   return (
     <div className="container">
       <header>
-        <h1>Co-Rooster Generator</h1>
-        <p>Vul je startdatum master in en zie je planning.</p>
+        <h1>UvA coassistent rooster</h1>
+        <p>Up-to-Date met de aanpassingen van oogheelkunde. Voor meer informatie zie berichtgeving van de opleiding.</p>
       </header>
 
       <div className="controls">
@@ -249,6 +263,26 @@ const handleExport = () => {
             Exporteer naar Kalender
           </button>
         </div>
+     <div className="filter-controls">
+        <div className="filter-item">
+          <input
+            type="checkbox"
+            id="includeKeuze"
+            checked={includeKeuze}
+            onChange={e => setIncludeKeuze(e.target.checked)}
+          />
+          <label htmlFor="includeKeuze">Toon Keuzecoschap</label>
+        </div>
+        <div className="filter-item">
+          <input
+            type="checkbox"
+            id="includeStage"
+            checked={includeStage}
+            onChange={e => setIncludeStage(e.target.checked)}
+          />
+          <label htmlFor="includeStage">Toon Wetenschappelijke Stage</label>
+        </div>
+      </div>
       </div>
 
       <div className="rooster-lijst">

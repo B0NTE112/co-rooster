@@ -39,10 +39,10 @@ export const regulierRooster = [
     { naam: 'Senior coschap', duurWeken: 16, type: 'semiarts', fase: 3 },
 
 //Masterfase 4
-    { naam: 'Keuze coschap', duurWeken: 8, type: 'semiarts', fase: 4 },
-    { naam: 'Vakantie', duurWeken: 1, type: 'vakantie', fase: 4 },
-    { naam: 'Wetenschappelijke stage', duurWeken: 16, type: 'semiarts', fase:4 },
-    { naam: 'Vakantie', duurWeken: 8, type: 'vakantie', fase: 4 },
+    { naam: 'Keuze coschap', duurWeken: 8, type: 'semiarts', fase: 4, blockId: 'keuze' },
+    { naam: 'Vakantie', duurWeken: 1, type: 'vakantie', fase: 4, blockId: 'keuze' },
+    { naam: 'Wetenschappelijke stage', duurWeken: 16, type: 'semiarts', fase:4, blockId: 'stage' },
+    { naam: 'Vakantie', duurWeken: 8, type: 'vakantie', fase: 4, blockId: 'stage' },
 ];
 
 export const schakeljaarRooster = [

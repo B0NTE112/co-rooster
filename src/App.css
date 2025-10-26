@@ -180,7 +180,7 @@ input[type='date'] {
 }
 .rooster-item.voorbereidend {
   border-left-color: #9c27b0; /* Paars */
-
+}
 /* VOEG DIT TOE AAN JE BESTAANDE APP.CSS */
 
 .main-nav {
@@ -220,12 +220,6 @@ input[type='date'] {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* Je rooster-specifieke container (als je die had) */
-.rooster-container {
-  /* Je had hier misschien een max-width: 700px */
-  /* Je kunt die stijlen gewoon hier laten staan */
 }
 
 .fase-titel {
@@ -301,5 +295,44 @@ input[type='date'] {
 
   .fase-titel {
     font-size: 1.3rem;
+  }
+}
+
+/* De container voor de vinkjes */
+.filter-controls {
+  display: flex;
+  gap: 20px; /* Ruimte tussen de vinkjes */
+  justify-content: center; /* Centreer de vinkjes */
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Elk vinkje met label */
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-item label {
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.filter-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Aanpassing voor mobiel */
+@media (max-width: 600px) {
+  .filter-controls {
+    flex-direction: column; /* Stapel de vinkjes op mobiel */
+    align-items: flex-start; /* Lijn ze links uit */
+    gap: 15px;
   }
 }
