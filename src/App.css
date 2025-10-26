@@ -222,6 +222,12 @@ input[type='date'] {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Je rooster-specifieke container (als je die had) */
+.rooster-container {
+  /* Je had hier misschien een max-width: 700px */
+  /* Je kunt die stijlen gewoon hier laten staan */
+}
+
 .fase-titel {
   margin-top: 35px; /* Extra ruimte boven een nieuwe fase */
   margin-bottom: 15px;
