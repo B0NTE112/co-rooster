@@ -32,6 +32,19 @@ function LocatiePage() {
     return () => unsubscribe();
   }, []); // Lege array []: voer dit 1x uit bij het laden
 
+   // NIEUWE useEffect: Reageer op veranderingen in de cogroepStartdatum
+  useEffect(() => {
+    // Als we een startdatum én een gebruiker hebben...
+    if (cogroepStartdatum && currentUser) {
+      // ...laad dan de data voor die hele groep
+      laadCogroepData(cogroepStartdatum);
+    } else {
+      // Anders (bv. bij uitloggen), reset het dashboard
+      setVerwerkteData(null);
+      setCogroepData([]);
+    }
+  }, [cogroepStartdatum, currentUser]); // <-- Dit is de "dependency array"
+
   // 2. Functie om bestaande data te LADEN uit Firestore
   const laadData = async (uid) => {
     if (!uid) return;
@@ -105,6 +118,10 @@ function LocatiePage() {
       await setDoc(docRef, dataToSave); 
       
       setStatus("Je locaties zijn opgeslagen!");
+
+      // Herlaad de cogroep-data om jouw wijziging direct te tonen
+      laadCogroepData(cogroepStartdatum);
+
     } catch (error) {
       console.error("Fout bij opslaan: ", error);
       setStatus("Er ging iets mis bij het opslaan.");
@@ -236,7 +253,53 @@ function LocatiePage() {
         </button>
         {status && <p className="status-bericht">{status}</p>}
       </div>
-    </div>
+
+{/* 5. HET MATCHER DASHBOARD */}
+      <div className="matcher-dashboard">
+        <h2>Cogroep Overzicht voor {cogroepStartdatum}</h2>
+        
+        {/* Toon dit als de verwerkte data is geladen */}
+        {verwerkteData ? (
+          <div className="dashboard-grid">
+            {Object.keys(verwerkteData).map(blokNaam => (
+              <div key={blokNaam} className="blok-overzicht">
+                <h3>{blokNaam}</h3>
+                
+                {/* Check of er überhaupt locaties zijn ingevuld voor dit blok */}
+                {Object.keys(verwerkteData[blokNaam]).length === 0 ? (
+                  <p className="geen-data">Nog geen locaties ingevuld voor dit blok.</p>
+                ) : (
+                  Object.keys(verwerkteData[blokNaam]).map(locatieNaam => (
+                    <div key={locatieNaam} className="locatie-groep">
+                      <h4>{locatieNaam}</h4>
+                      <ul>
+                        {verwerkteData[blokNaam][locatieNaam].map(naam => (
+                          <li key={naam}>
+                            {naam}
+                            {/* Markeer de ingelogde gebruiker */}
+                            {naam === currentUser.displayName && (
+                              <span className="jij-marker"> (Jij)</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          // Toon dit als er geen startdatum is geselecteerd
+          cogroepStartdatum ? (
+            <p className="placeholder-text">Data laden...</p>
+          ) : (
+            <p className="placeholder-text">Kies een startdatum om het overzicht te zien.</p>
+          )
+        )}
+      </div>
+
+    </div> // Dit is de sluitende </div> van de hele component
   );
 }
 

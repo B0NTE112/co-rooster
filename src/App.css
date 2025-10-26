@@ -325,6 +325,66 @@ input[type='date'] {
   margin-top: 10px;
 }
 
+.matcher-dashboard {
+  margin-top: 40px;
+  border-top: 2px solid #eee;
+  padding-top: 20px;
+}
+
+.matcher-dashboard h2 {
+  color: #0056b3;
+}
+
+.dashboard-grid {
+  display: grid;
+  /* Maak 2 kolommen op grotere schermen, 1 op kleine */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.blok-overzicht {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.blok-overzicht h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.geen-data {
+  font-style: italic;
+  color: #888;
+}
+
+.locatie-groep h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.locatie-groep ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.locatie-groep li {
+  background-color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  border: 1px solid #eee;
+}
+
+.jij-marker {
+  font-weight: bold;
+  color: #007bff;
+}
+
 /* ==============================================
    REGELEMENT VOOR MOBIELE TELEFOONS
    ============================================== */
