@@ -285,7 +285,10 @@ const handleExport = () => {
         </div>
       </div>
       </div>
-
+ <div>
+      {/* ... */}
+      <Analytics />
+    </div>
       <div className="rooster-lijst">
         {/* Als er nog geen datum is, toon een melding */}
         {!startDate && (
