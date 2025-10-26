@@ -32,6 +32,55 @@ header h1 {
   /* Je kunt ook een vaste grootte gebruiken, zoals 18px */
 }
 
+.main-nav {
+  /* ... je bestaande stijlen ... */
+  display: flex; /* Zorgt dat de items naast elkaar kunnen */
+  justify-content: space-between; /* Links en rechts uitlijnen */
+  align-items: center; /* Verticaal centreren */
+}
+
+.main-nav ul {
+  /* ... je bestaande stijlen ... */
+  flex-grow: 1; /* Zorgt dat de <ul> de nodige ruimte pakt */
+}
+
+.login-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-text {
+  color: white;
+  font-size: 0.9em;
+  margin-right: 10px;
+}
+
+.auth-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.auth-button.login {
+  background-color: #ffffff;
+  color: #004a99; /* Kleur van je nav-bar */
+}
+.auth-button.login:hover {
+  background-color: #f0f0f0;
+}
+
+.auth-button.logout {
+  background-color: #e63946; /* Een 'logout' rode kleur */
+  color: white;
+}
+.auth-button.logout:hover {
+  background-color: #d62828;
+}
+
 /* De exporteerknop */
 #exportButton {
   padding: 10px 16px; /* Maakt de knop iets groter dan de datum-input */

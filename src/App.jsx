@@ -1,329 +1,94 @@
-import * as ics from 'ics';
-import { Analytics } from "@vercel/analytics/react";
-import React, { useState, useMemo } from 'react';
-import { regulierRooster } from './roosterData.js';
-import {addWeeks, format, subDays, addDays, startOfWeek, endOfWeek, areIntervalsOverlapping, differenceInDays, getDay,} 
-
-from 'date-fns';
-import { nl } from 'date-fns/locale';
+import React, { useState, useEffect } from 'react';
+import { Outlet, Link } from 'react-router-dom';
 import './App.css';
-
-// Helper functie om datums netjes te tonen
-function formatDate(datum) {
-  // Formatteer naar "26 okt 2025"
-  return format(datum, 'd MMM yyyy', { locale: nl });
-}
+import { auth } from './firebase';
+import { 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged 
+} from "firebase/auth";
 
 function App() {
-  // 3. STATE: Dit onthoudt wat de gebruiker kiest
-  const [startDate, setStartDate] = useState(null);
+  // 4. Maak een 'state' aan om de ingelogde gebruiker bij te houden
+  const [currentUser, setCurrentUser] = useState(null);
 
-  //Filterstatus
-  const [includeKeuze, setIncludeKeuze] = useState(true);
-  const [includeStage, setIncludeStage] = useState(true);
-  // 4. BEREKENING: Dit berekent het rooster
-  // 'useMemo' zorgt dat dit alleen herberekend wordt als de state verandert
-const berekendRooster = useMemo(() => {
-    // 1. CONTROLEER OF ER EEN STARTDATUM IS
-    if (!startDate) return [];
-
-    // Leest de startdatum correct in, ongeacht de tijdzone.
-    const parts = startDate.split('-'); 
-    let huidigeDatum = new Date(parts[0], parts[1] - 1, parts[2]); 
-
-    const gekozenStructuur = regulierRooster.filter(blok => {
-      // Filter uit ALS het 'keuze' is EN de box NIET is aangevinkt
-      if (blok.blockId === 'keuze' && !includeKeuze) {
-        return false;
-      }
-      // Filter uit ALS het 'stage' is EN de box NIET is aangevinkt
-      if (blok.blockId === 'stage' && !includeStage) {
-        return false;
-      }
-      // Zo niet, houd het blok in de lijst
-      return true;
-    });
-    const berekendeBlokken = []; // Hier bouwen we het rooster op
-
-    const getChristmas = (date) => new Date(date.getFullYear(), 11, 25); // 25 dec
-
-    const isItChristmas = (start_date, end_date, christmas) => {
-      return christmas >= start_date && christmas <= end_date;
-    };
-    
-    const ChristmasInWeekend = (christmas) => {
-      const dayOfWeek = getDay(christmas); // 0=Zondag, 6=Zaterdag
-      return dayOfWeek === 0 || dayOfWeek === 6;
-    };
-
-    const ChristmasInFirstWeek = (start_date, christmas) => {
-      const end_first_week = addDays(start_date, 6);
-      return christmas >= start_date && christmas <= end_first_week;
-    };
-
-    const ChristmasInLastWeek = (end_date, christmas) => {
-      const start_last_week = subDays(end_date, 6);
-      return christmas >= start_last_week && christmas <= end_date;
-    };
-    
-    const calculateWeeksToChristmas = (start_date, christmas) => {
-      // +1 om de startdag mee te tellen
-      const days = differenceInDays(christmas, start_date) + 1;
-      return Math.floor(days / 7);
-    };
-
-    // Helper om een kerstblok-object te maken
-    const createKerstBlok = (fase, startDatumBlok1) => {
-      return {
-        naam: 'Kerstvakantie',
-        type: 'vakantie',
-        fase: fase, 
-        start: startDatumBlok1,
-        eind: addDays(startDatumBlok1, 6),
-      };
-    };
-
-      for (const blok of gekozenStructuur) {
-      
-      let blokData = { ...blok }; // Een kopie om mee te werken
-      let blokStart = new Date(huidigeDatum);
-      let blokEind = addDays(addWeeks(blokStart, blokData.duurWeken), -1);
-      
-      let kerstToegevoegdDezeLoop = 0; // Vervangt 'christmas_week' uit het voorbeeld
-      const christmas = getChristmas(blokStart);
-
-      // if (isItChristmas(...))
-      if (isItChristmas(blokStart, blokEind, christmas) && blokData.type !== 'vakantie') {
-        
-        // 1. is not in weekend
-        if (!ChristmasInWeekend(christmas)) {
-          
-          // 1.1 christmas is in first week
-          if (ChristmasInFirstWeek(blokStart, christmas)) {
-            // Voeg kerst VOOR het blok toe
-            berekendeBlokken.push(createKerstBlok(blokData.fase, blokStart));
-            
-            // Pas het coschap-blok aan (schuift 1 week op)
-            blokStart = addWeeks(blokStart, 1);
-            blokEind = addWeeks(blokEind, 1);
-          }
-          // 1.2 christmas not in first week
-          else {
-            let weeks_block_1 = calculateWeeksToChristmas(blokStart, christmas);
-            let eindBlok1 = addDays(addWeeks(blokStart, weeks_block_1), -1);
-
-            // Voeg Blok 1 toe
-            berekendeBlokken.push({ ...blokData, naam: `${blokData.naam}`, start: blokStart, eind: eindBlok1 });
-            // Voeg Kerst toe (start 1 dag na eindBlok1)
-            berekendeBlokken.push(createKerstBlok(blokData.fase, addDays(eindBlok1, 1)));
-            
-            // Pas het 'huidige' blok aan om 'Blok 2' te worden
-            blokStart = addDays(eindBlok1, 8); // 1 dag + 7 dagen vakantie
-            blokEind = addWeeks(blokEind, 1); // Totale einddatum schuift 1 week
-            blokData.naam = `${blokData.naam}`;
-          }
-          kerstToegevoegdDezeLoop = 1;
-        }
-        // 2. is in weekend
-        else {
-          
-          // 2.1 christmas is in last week
-          if (ChristmasInLastWeek(blokEind, christmas)) {
-            // Voeg kerst NA het blok toe
-            // We voegen het normale blok toe, en *daarna* het kerstblok
-            berekendeBlokken.push({ ...blokData, start: blokStart, eind: blokEind });
-            berekendeBlokken.push(createKerstBlok(blokData.fase, addDays(blokEind, 1)));
-            kerstToegevoegdDezeLoop = 1;
-          }
-          // 2.2 christmas is not in last week
-          else {
-            // Logica is (bijna) identiek aan 1.2, maar 'weeks_block_1' is +1
-            let weeks_block_1 = calculateWeeksToChristmas(blokStart, christmas) + 1;
-            let eindBlok1 = addDays(addWeeks(blokStart, weeks_block_1), -1);
-
-            // Voeg Blok 1 toe
-            berekendeBlokken.push({ ...blokData, naam: `${blokData.naam} (Deel 1)`, start: blokStart, eind: eindBlok1 });
-            // Voeg Kerst toe
-            berekendeBlokken.push(createKerstBlok(blokData.fase, addDays(eindBlok1, 1)));
-
-            // Pas het 'huidige' blok aan om 'Blok 2' te worden
-            blokStart = addDays(eindBlok1, 8);
-            blokEind = addWeeks(blokEind, 1);
-            blokData.naam = `${blokData.naam} (Deel 2)`;
-            kerstToegevoegdDezeLoop = 1;
-          }
-        }
-      }
-
-      // Voeg het (eventueel aangepaste) blok toe,
-      // *behalve* in scenario 2.1 waar het al was toegevoegd.
-      if (!(kerstToegevoegdDezeLoop === 1 && ChristmasInWeekend(christmas) && ChristmasInLastWeek(blokEind, christmas))) {
-        berekendeBlokken.push({
-          ...blokData,
-          start: blokStart,
-          eind: blokEind,
-        });
-      }
-
-      // 5. UPDATE DE CURSOR (huidigeDatum)
-      // Vertaald uit: date.setDate(date.getDate() + 7 * (masterProgram[i].weeks + christmas_week))
-      // Dit betekent dat de *oorspronkelijke* duur + de kerstweek wordt opgeteld.
-      
-      // We zetten de cursor op de dag NA het *laatste* berekende blok-einde
-      const laatsteBerekendeEinddatum = berekendeBlokken[berekendeBlokken.length - 1].eind;
-      huidigeDatum = addDays(laatsteBerekendeEinddatum, 1);
-
-    } // Einde for...of loop
-
-    // 6. FINALISEER DE DATA (voor weergave)
-    return berekendeBlokken.map(item => {
-      const duurInDagen = differenceInDays(item.eind, item.start) + 1;
-      const weken = Math.floor(duurInDagen / 7);
-      const dagen = duurInDagen % 7;
-      
-      let duurString;
-      if (dagen === 0) {
-        duurString = `${weken} ${weken === 1 ? 'week' : 'weken'}`;
-      } else {
-        duurString = `${weken}w, ${dagen}d`;
-      }
-
-      return {
-        ...item, // naam, type, fase
-        startString: formatDate(item.start),
-        eindString: formatDate(item.eind),
-        duur: duurString,
-      };
+  // 5. Gebruik 'useEffect' om te luisteren naar inlog-veranderingen
+  //    Firebase vertelt ons automatisch wie de gebruiker is.
+  useEffect(() => {
+    // 'onAuthStateChanged' is een listener die afgaat zodra iemand
+    // inlogt of uitlogt.
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // 'user' is het user-object als je ingelogd bent,
+      // of 'null' als je uitgelogd bent.
+      setCurrentUser(user);
     });
 
-  }, [startDate, includeKeuze, includeStage]);
+    // Dit is een 'cleanup' functie die de listener stopt
+    // als de component verdwijnt.
+    return () => unsubscribe();
+  }, []); // De lege array [] betekent: "doe dit 1x bij het laden"
 
-const handleExport = () => {
-    if (!berekendRooster || berekendRooster.length === 0) {
-      alert("Genereer eerst een rooster voordat je kunt exporteren.");
-      return;
+
+  // 6. Maak de inlog- en uitlogfuncties
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // Het inloggen is gelukt. De 'onAuthStateChanged' (hierboven)
+      // regelt nu automatisch het updaten van de 'currentUser' state.
+    } catch (error) {
+      console.error("Fout bij inloggen:", error);
     }
-    
-    // Converteer de rooster-items...
-    const events = berekendRooster.map(item => {
-      // +1 dag toevoegen voor .ics bestanden
-      const icsEindDatum = addDays(item.eind, 1);
-      return {
-        title: item.naam,
-        start: [item.start.getFullYear(), item.start.getMonth() + 1, item.start.getDate()],
-        end: [icsEindDatum.getFullYear(), icsEindDatum.getMonth() + 1, icsEindDatum.getDate()],
-        description: `Masterfase ${item.fase}, Duur: ${item.duur}`,
-      };
-    });
-    
-    // Maak het .ics bestand...
-    const { error, value } = ics.createEvents(events);
-    
-    if (error) {
-      console.error(error);
-      alert("Er ging iets mis bij het maken van het kalenderbestand.");
-      return;
-    }
-    
-    // Trigger de download...
-    const blob = new Blob([value], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'co-rooster.ics');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
-  // 5. RENDER (JSX): Dit is de HTML die je op het scherm ziet
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Het uitloggen is gelukt. 'onAuthStateChanged' (hierboven)
+      // updatet de 'currentUser' state nu naar 'null'.
+    } catch (error) {
+      console.error("Fout bij uitloggen:", error);
+    }
+  };
+
+
   return (
-    <div className="container">
-      <header>
-        <h1>UvA coassistent rooster</h1>
-        <p>Up-to-Date met de aanpassingen van oogheelkunde. Voor meer informatie zie berichtgeving van de opleiding.</p>
-      </header>
+    <div className="site-wrapper">
+      <nav className="main-nav">
+        <ul>
+          <li>
+            <Link to="/">Rooster Generator</Link>
+          </li>
+          <li>
+            <Link to="/locaties">Locatie Matcher</Link>
+          </li>
+        </ul>
 
-      <div className="controls">
-        <div className="control-item">
-          <label htmlFor="startDate">Startdatum Master:</label>
-          <input
-            type="date"
-            id="startDate"
-            // Als de datum verandert, update de state
-            onChange={e => setStartDate(e.target.value)}
-          />
+        {/* 7. HIER KOMT DE LOGIN UI (in de navigatiebalk) */}
+        <div className="login-section">
+          {currentUser ? (
+            // Als er een gebruiker IS:
+            <>
+              <span className="welcome-text">
+                Welkom, {currentUser.displayName}
+              </span>
+              <button onClick={handleLogout} className="auth-button logout">
+                Uitloggen
+              </button>
+            </>
+          ) : (
+            // Als er GEEN gebruiker is:
+            <button onClick={handleLogin} className="auth-button login">
+              Login met Google
+            </button>
+          )}
+        </div>
+      </nav>
 
-        </div>
-      <div className="control-item">
-          <button 
-            id="exportButton" 
-            onClick={handleExport}
-            disabled={!berekendRooster.length} 
-          >
-            Exporteer naar Kalender
-          </button>
-        </div>
-     <div className="filter-controls">
-        <div className="filter-item">
-          <input
-            type="checkbox"
-            id="includeKeuze"
-            checked={includeKeuze}
-            onChange={e => setIncludeKeuze(e.target.checked)}
-          />
-          <label htmlFor="includeKeuze">Toon Keuzecoschap</label>
-        </div>
-        <div className="filter-item">
-          <input
-            type="checkbox"
-            id="includeStage"
-            checked={includeStage}
-            onChange={e => setIncludeStage(e.target.checked)}
-          />
-          <label htmlFor="includeStage">Toon Wetenschappelijke Stage</label>
-        </div>
-      </div>
-      </div>
- <div>
-      {/* ... */}
-      <Analytics />
-    </div>
-      <div className="rooster-lijst">
-        {/* Als er nog geen datum is, toon een melding */}
-        {!startDate && (
-          <p className="placeholder-text">Kies een startdatum om je rooster te genereren.</p>
-        )}
-
-        {/* Loop door het berekende rooster en toon elk blok */}
-{berekendRooster.map((item, index) => {
-  // Bepaal of we een titel moeten tonen:
-  // 1. Is het de allereerste (index === 0)? Ja, toon titel.
-  // 2. Is de fase anders dan de fase van het *vorige* item? Ja, toon titel.
-  const showFaseTitel = index === 0 || item.fase !== berekendRooster[index - 1].fase;
-
-  // We gebruiken een React Fragment (<>) om de titel en het item te groeperen
-  return (
-    <React.Fragment key={index}>
-      {/* Als showFaseTitel waar is, toon deze H2-titel */}
-      {showFaseTitel && (
-        <h2 className="fase-titel">Masterfase {item.fase}</h2>
-      )}
-
-      {/* Dit is je bestaande rooster-item-div */}
-      <div className={`rooster-item ${item.type}`}>
-        <div className="rooster-info">
-          <h3>{item.naam}</h3>
-          <p>{item.startString} - {item.eindString}</p>
-        </div>
- 	<div className="rooster-duur">
- 		 {item.duur}
-	</div>
-      </div>
-    </React.Fragment>
-  );
-})}
-      </div>
+      <main className="content">
+        <Outlet />
+      </main>
     </div>
   );
 }
