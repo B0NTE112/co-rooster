@@ -9,8 +9,10 @@ body {
 }
 
 .container {
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
 }
 
 header {
@@ -63,6 +65,9 @@ header h1 {
 /* De knoppen bovenin */
 .controls {
   display: flex;
+  flex-direction: column; /* Stapel ze verticaal */
+  align-items: center;  /* Centreer ze horizontaal */
+  gap: 15px;            /* Ruimte ertussen */
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
