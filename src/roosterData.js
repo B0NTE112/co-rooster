@@ -3,7 +3,7 @@
 
 export const regulierRooster = [
 //Masterfase 1
-    { naam: 'Introductie Co-schap + Voorbereidend onderwijs', duurWeken: 4, type: 'voorbereidend', fase: 1 },
+    { naam: 'Intro + Voorbereidend onderwijs', duurWeken: 4, type: 'voorbereidend', fase: 1 },
     { naam: 'Dermatologie', duurWeken: 2, type: 'coschap', fase: 1 },
     { naam: 'Interne Geneeskunde', duurWeken: 9, type: 'coschap', fase: 1 },
     { naam: 'Vakantie', duurWeken: 1, type: 'vakantie', fase: 1 },
@@ -15,7 +15,7 @@ export const regulierRooster = [
     { naam: 'Voorbereidend onderwijs', duurWeken: 1, type: 'voorbereidend', fase: 2 },
     { naam: 'Oogheelkunde', duurWeken: 3, type: 'coschap', fase: 2 },
     { naam: 'Neurologie', duurWeken: 6, type: 'coschap', fase: 2 },
-    { naam: 'Voorbereidend onderwijs', duurWeken: 1, type: 'coschap', fase: 2 },
+    { naam: 'Voorbereidend onderwijs', duurWeken: 1, type: 'voorbereidend', fase: 2 },
     { naam: 'Psychiatrie', duurWeken: 6, type: 'coschap', fase: 2 },
     { naam: 'Vakantie', duurWeken: 3, type: 'vakantie', fase: 2 },
     { naam: 'Voorbereidend onderwijs', duurWeken: 2, type: 'voorbereidend', fase: 2 },

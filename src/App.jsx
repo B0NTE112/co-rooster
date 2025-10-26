@@ -112,14 +112,14 @@ const berekendRooster = useMemo(() => {
             let eindBlok1 = addDays(addWeeks(blokStart, weeks_block_1), -1);
 
             // Voeg Blok 1 toe
-            berekendeBlokken.push({ ...blokData, naam: `${blokData.naam} (Deel 1)`, start: blokStart, eind: eindBlok1 });
+            berekendeBlokken.push({ ...blokData, naam: `${blokData.naam}`, start: blokStart, eind: eindBlok1 });
             // Voeg Kerst toe (start 1 dag na eindBlok1)
             berekendeBlokken.push(createKerstBlok(blokData.fase, addDays(eindBlok1, 1)));
             
             // Pas het 'huidige' blok aan om 'Blok 2' te worden
             blokStart = addDays(eindBlok1, 8); // 1 dag + 7 dagen vakantie
             blokEind = addWeeks(blokEind, 1); // Totale einddatum schuift 1 week
-            blokData.naam = `${blokData.naam} (Deel 2)`;
+            blokData.naam = `${blokData.naam}`;
           }
           kerstToegevoegdDezeLoop = 1;
         }
