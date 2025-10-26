@@ -1,4 +1,5 @@
 import * as ics from 'ics';
+import { Analytics } from "@vercel/analytics/react";
 import React, { useState, useMemo } from 'react';
 import { regulierRooster } from './roosterData.js';
 import {addWeeks, format, subDays, addDays, startOfWeek, endOfWeek, areIntervalsOverlapping, differenceInDays, getDay,} 
