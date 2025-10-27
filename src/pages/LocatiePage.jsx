@@ -16,6 +16,10 @@ function LocatiePage() {
   const [status, setStatus] = useState(""); // Voor laad/feedback berichten
   const [cogroepData, setCogroepData] = useState([]); // Ruwe data van de hele groep
   const [verwerkteData, setVerwerkteData] = useState(null); // Verwerkt voor de UI
+  // NIEUWE STATE: Bepaalt of het invoerformulier verborgen is.
+  // We beginnen met 'false' (dus open).
+  const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  
   // 1. Luister naar de inlogstatus
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -59,7 +63,8 @@ function LocatiePage() {
       // Als er data is, zet dit in de state
       const data = docSnap.data();
       setCogroepStartdatum(data.cogroepStartdatum || "");
-      
+      // Klap het formulier in, want de gebruiker heeft al data.
+      setIsInputCollapsed(true);
       // Converteer de array uit de database terug naar een object
       // voor makkelijke binding met het formulier
       const locatiesObject = data.blokken.reduce((acc, blok) => {
@@ -71,6 +76,8 @@ function LocatiePage() {
     } else {
       // Geen data gevonden
       setStatus("Je hebt nog geen locaties opgeslagen.");
+      // Zorg dat het formulier open staat, zodat de gebruiker data kan invoeren.
+      setIsInputCollapsed(false);
     }
   };
 
@@ -200,7 +207,7 @@ function LocatiePage() {
   if (!currentUser) {
     return (
       <div className="placeholder-text" style={{padding: '20px'}}>
-        Log in om je locaties in te voeren en te vergelijken.
+        Deze tool geeft per cogroepje een overzicht wie waar samen coschappen heeft. Log in met jouw persoonlijke Google account om je locaties in te voeren en te vergelijken wanneer de anderen uit je cogroepje dit ook hebben gedaan.
       </div>
     );
   }
@@ -215,6 +222,16 @@ function LocatiePage() {
   return (
     <div>
       <h1>Jouw Locaties</h1>
+      <p>Als je in deze tool de locaties van jouw coschap invult, zie je ook de locaties van de anderen uit jouw cogroep. Zo kun je makkelijk zien met wie jij op welke plek samen coschappen loopt.</p>
+      <button 
+        onClick={() => setIsInputCollapsed(!isInputCollapsed)} 
+        className="toggle-input-button"
+      >
+        {isInputCollapsed ? 'Mijn Locaties Wijzigen' : 'Verberg Invoer'}
+      </button>
+      {/* Dit hele blok wordt nu alleen getoond als isInputCollapsed 'false' is */}
+      {!isInputCollapsed && (
+        <> {/* We gebruiken een React Fragment (<>) om alles te groeperen */}
       <p>Voer hier in waar jij je coschappen loopt. Deze gegevens worden gedeeld met je cogroep.</p>
       
       {/* 1. De datumkiezer voor de cogroep */}
@@ -253,7 +270,8 @@ function LocatiePage() {
         </button>
         {status && <p className="status-bericht">{status}</p>}
       </div>
-
+    </>
+      )}
 {/* 5. HET MATCHER DASHBOARD */}
       <div className="matcher-dashboard">
         <h2>Cogroep Overzicht voor {cogroepStartdatum}</h2>

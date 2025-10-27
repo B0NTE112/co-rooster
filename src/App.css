@@ -385,6 +385,23 @@ input[type='date'] {
   color: #007bff;
 }
 
+.toggle-input-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bff;
+  background-color: #e6f2ff;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.toggle-input-button:hover {
+  background-color: #d0e7ff;
+}
+
 /* ==============================================
    REGELEMENT VOOR MOBIELE TELEFOONS
    ============================================== */
