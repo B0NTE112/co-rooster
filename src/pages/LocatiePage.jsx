@@ -1,10 +1,12 @@
 // src/pages/LocatiePage.jsx
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../firebase'; // Importeer auth en db
+import { auth, db } from '../firebase'; 
 import { onAuthStateChanged } from "firebase/auth";
-import { regulierRooster } from '../roosterData'; // We gebruiken hetzelfde rooster
-import '../App.css'; // We gebruiken dezelfde styling
+import { regulierRooster } from '../roosterData'; 
+import '../App.css'; 
 import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { locatieOpties } from '../roosterData';
+import Select from 'react-select';
 
 function LocatiePage() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -82,12 +84,16 @@ function LocatiePage() {
   };
 
   // 3. Functie om data op te slaan in de state als de gebruiker typt
-  const handleLocatieChange = (blokNaam, locatie) => {
-    setLocaties(prevLocaties => ({
-      ...prevLocaties,
-      [blokNaam]: locatie // bv. { 'Interne Geneeskunde': 'AMC' }
-    }));
-  };
+  const handleLocatieChange = (blokNaam, geselecteerdeOptie) => {
+  // 'geselecteerdeOptie' is nu { value: '...', label: '...' } of null
+  
+  setLocaties(prevLocaties => ({
+    ...prevLocaties,
+    // We slaan de 'value' (de string) op in de state,
+    // of een lege string als het veld is gewist.
+    [blokNaam]: geselecteerdeOptie ? geselecteerdeOptie.value : ""
+  }));
+};
 
   // 4. Functie om data op te slaan in FIRESTORE
   const handleOpslaan = async () => {
@@ -254,12 +260,25 @@ function LocatiePage() {
             <label htmlFor={`locatie-${index}`}>
               {blok.naam} ({blok.duurWeken}w)
             </label>
-            <input
-              type="text"
+            <Select
               id={`locatie-${index}`}
-              placeholder="Vul ziekenhuis/locatie in..."
-              value={locaties[blok.naam] || ""}
-              onChange={e => handleLocatieChange(blok.naam, e.target.value)}
+              isSearchable={true}   // Maakt typen en zoeken mogelijk
+              isClearable={true}    // Toont een 'x' om de selectie te wissen
+              placeholder="Kies een ziekenhuis..."
+
+              options={locatieOpties}
+              
+              // De 'onChange' roept onze nieuwe handler aan
+              onChange={(geselecteerdeOptie) => 
+                handleLocatieChange(blok.naam, geselecteerdeOptie)
+              }
+              
+              // Bepaal de huidige waarde:
+              // Je 'locaties' state heeft de string (bv. "OLVG, locatie West")
+              // 'Select' heeft het hele object nodig: { value: "...", label: "..." }
+              value={
+                locatieOpties.find(optie => optie.value === locaties[blok.naam]) || null
+              }
             />
           </div>
         ))}

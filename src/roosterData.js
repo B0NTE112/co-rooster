@@ -45,9 +45,13 @@ export const regulierRooster = [
     { naam: 'Vakantie', duurWeken: 8, type: 'vakantie', fase: 4, blockId: 'stage' },
 ];
 
-export const schakeljaarRooster = [
-    { naam: 'Wetenschappelijke Stage (deel 1)', duurWeken: 10, type: 'stage' },
-    { naam: 'Keuzecoschap', duurWeken: 4, type: 'coschap' },
-    { naam: 'VAKANTIE', duurWeken: 1, type: 'vakantie' },
-    { naam: 'Semi-arts stage', duurWeken: 8, type: 'semiarts' },
+//Data voor locatie kiezer app
+export const locatieOpties = [
+  { value: 'Amsterdam UMC, locatie AMC', label: 'Amsterdam UMC, locatie AMC' },
+  { value: 'Amsterdam UMC, locatie VUMC', label: 'Amsterdam UMC, locatie VUMC' },
+  { value: 'OLVG, locatie Oost', label: 'OLVG, locatie Oost' },
+  { value: 'OLVG, locatie West', label: 'OLVG, locatie West' },
+  { value: 'Spaarne Gasthuis, Haarlem', label: 'Spaarne Gasthuis, Haarlem' },
+  { value: 'Spaarne Gasthuis, Hoofddorp', label: 'Spaarne Gasthuis, Hoofddorp' },
+  { value: 'Antoni van Leeuwenhoek', label: 'Antoni van Leeuwenhoek' },
 ];
