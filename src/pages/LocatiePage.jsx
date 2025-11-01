@@ -84,16 +84,24 @@ function LocatiePage() {
   };
 
   // 3. Functie om data op te slaan in de state als de gebruiker typt
-  const handleLocatieChange = (blokNaam, geselecteerdeOptie) => {
-  // 'geselecteerdeOptie' is nu { value: '...', label: '...' } of null
-  
-  setLocaties(prevLocaties => ({
-    ...prevLocaties,
-    // We slaan de 'value' (de string) op in de state,
-    // of een lege string als het veld is gewist.
-    [blokNaam]: geselecteerdeOptie ? geselecteerdeOptie.value : ""
-  }));
-};
+const handleLocatieChange = (blokNaam, waarde) => {
+    let geselecteerdeWaarde = "";
+
+    if (typeof waarde === 'string') {
+      // Optie 1: Dit komt van een <input type="text"> (vrije invoer)
+      geselecteerdeWaarde = waarde;
+    } else if (waarde && typeof waarde === 'object' && waarde.hasOwnProperty('value')) {
+      // Optie 2: Dit komt van react-select (is { value: '...', label: '...' })
+      geselecteerdeWaarde = waarde.value;
+    }
+    // (Optie 3: 'waarde' is null of undefined als het veld gewist wordt, 
+    // 'geselecteerdeWaarde' blijft dan "" - wat perfect is)
+
+    setLocaties(prevLocaties => ({
+      ...prevLocaties,
+      [blokNaam]: geselecteerdeWaarde
+    }));
+  };
 
   // 4. Functie om data op te slaan in FIRESTORE
   const handleOpslaan = async () => {
@@ -254,34 +262,48 @@ function LocatiePage() {
       </div>
 
       {/* 2. Het formulier met alle coschappen */}
-      <div className="locatie-form">
-        {relevanteBlokken.map((blok, index) => (
-          <div key={index} className="locatie-invoer-item">
-            <label htmlFor={`locatie-${index}`}>
-              {blok.naam} ({blok.duurWeken}w)
-            </label>
-            <Select
-              id={`locatie-${index}`}
-              isSearchable={true}   // Maakt typen en zoeken mogelijk
-              isClearable={true}    // Toont een 'x' om de selectie te wissen
-              placeholder="Kies een ziekenhuis..."
+<div className="locatie-form">
+        
+        {relevanteBlokken.map((blok, index) => {
+          
+          // Pak de specifieke opties voor dit blok
+          const opties = blok.mogelijkeLocaties; 
+          
+          return (
+            <div key={index} className="locatie-invoer-item">
+              <label htmlFor={`locatie-${index}`}>
+                {blok.naam} ({blok.duurWeken}w)
+              </label>
 
-              options={locatieOpties}
-              
-              // De 'onChange' roept onze nieuwe handler aan
-              onChange={(geselecteerdeOptie) => 
-                handleLocatieChange(blok.naam, geselecteerdeOptie)
-              }
-              
-              // Bepaal de huidige waarde:
-              // Je 'locaties' state heeft de string (bv. "OLVG, locatie West")
-              // 'Select' heeft het hele object nodig: { value: "...", label: "..." }
-              value={
-                locatieOpties.find(optie => optie.value === locaties[blok.naam]) || null
-              }
-            />
-          </div>
-        ))}
+              {/* --- DE CONDITIONELE RENDER --- */}
+              {opties ? (
+                // GEVAL 1: Er is een lijst? Toon <Select>
+                <Select
+                  id={`locatie-${index}`}
+                  isSearchable={true}
+                  isClearable={true}
+                  placeholder="Kies een locatie..."
+                  options={opties} // Gebruik de specifieke lijst
+                  onChange={(geselecteerdeOptie) => 
+                    handleLocatieChange(blok.naam, geselecteerdeOptie)
+                  }
+                  value={
+                    opties.find(optie => optie.value === locaties[blok.naam]) || null
+                  }
+                />
+              ) : (
+                // GEVAL 2: Geen lijst? Toon gewone <input> (voor Keuzecoschap etc.)
+                <input
+                  type="text"
+                  id={`locatie-${index}`}
+                  placeholder="Vul locatie in (bijv. Keuzecoschap)..."
+                  value={locaties[blok.naam] || ""}
+                  onChange={e => handleLocatieChange(blok.naam, e.target.value)}
+                />
+              )}
+            </div>
+          )
+        })}
         
         {/* 3. De Opslaan-knop */}
         <button onClick={handleOpslaan} className="auth-button login" style={{marginTop: '20px'}}>
